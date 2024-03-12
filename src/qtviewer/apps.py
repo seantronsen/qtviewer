@@ -4,8 +4,8 @@ from typing import List, NoReturn
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QHBoxLayout, QWidget, QApplication
 from pyqtgraph import LayoutWidget
-from qtviewer.panels import StatefulPane
-from qtviewer.widgets import StatefulWidget
+from qtviewer.panels import AbstractStatefulPane
+from qtviewer.widgets import AbstractControlWidget
 
 
 class AppBase(QApplication):
@@ -61,24 +61,24 @@ class AppMain(AppBase):
     Serves as a root node for any qtviewer GUI.
     """
 
-    data_displays: List[StatefulPane]
-    data_controls: List[StatefulWidget]
+    data_displays: List[AbstractStatefulPane]
+    data_controls: List[AbstractControlWidget]
 
     def __init__(self, title="") -> None:
         super().__init__(title=title)
         self.data_controls = []
         self.data_displays = []
 
-    def __link_with_global_state(self, pane: QWidget):
+    def __enchain_global(self, pane: QWidget):
         pane_type = type(pane)
-        if issubclass(pane_type, StatefulPane):
-            s_pane: StatefulPane = pane  # pyright: ignore
+        if issubclass(pane_type, AbstractStatefulPane):
+            s_pane: AbstractStatefulPane = pane  # pyright: ignore
             for x in self.data_controls:
                 s_pane.enchain(x)
             self.data_displays.append(s_pane)
 
-        if issubclass(pane_type, StatefulWidget):
-            s_widget: StatefulWidget = pane  # pyright: ignore
+        if issubclass(pane_type, AbstractControlWidget):
+            s_widget: AbstractControlWidget = pane  # pyright: ignore
             for x in self.data_displays:
                 x.enchain(s_widget)
             self.data_controls.append(s_widget)
@@ -94,7 +94,7 @@ class AppMain(AppBase):
         for x in panes:
             self.panel.addWidget(x)
             self.panel.nextRow()
-            self.__link_with_global_state(x)
+            self.__enchain_global(x)
 
     def add_mosaic(self, mosaic: List[List[QWidget]]):
         assert type(mosaic) == list
@@ -106,7 +106,7 @@ class AppMain(AppBase):
             wrapper.setLayout(hbox)
             for element in row:
                 hbox.addWidget(element)
-                self.__link_with_global_state(element)
+                self.__enchain_global(element)
             self.panel.addWidget(wrapper)
             self.panel.nextRow()
 

@@ -1,17 +1,17 @@
 from PySide6.QtCore import QTimer
-from qtviewer.panels import StatefulPane
+from qtviewer.panels import AbstractStatefulPane
 import numpy as np
 
 
 class Animator:
-    animation_content: StatefulPane
+    animation_content: AbstractStatefulPane
     timer: QTimer
     animation_tick: np.uintp
 
     def __init__(
         self,
         fps: float,
-        contents: StatefulPane,
+        contents: AbstractStatefulPane,
     ) -> None:
         assert not fps <= 0
         super().__init__()

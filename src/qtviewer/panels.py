@@ -2,14 +2,14 @@ from numpy.typing import NDArray
 from pyqtgraph import GraphicsLayoutWidget, LayoutWidget, PlotDataItem
 from qtviewer.decorators import performance_log
 from qtviewer.state import State
-from qtviewer.widgets import StatefulWidget
+from qtviewer.widgets import AbstractControlWidget
 from typing import Callable, Dict, List, Optional
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.opengl as pggl
 
 
-class StatefulPane(LayoutWidget):
+class AbstractStatefulPane(LayoutWidget):
     """
     A simple pane/panel class that holds some state used for event handling /
     processing. The intended design has it such that this class acts as a base
@@ -66,7 +66,7 @@ class StatefulPane(LayoutWidget):
         """
         self.pane_state.flush()
 
-    def enchain(self, widget: StatefulWidget):
+    def enchain(self, widget: AbstractControlWidget):
         """
         Bond a stateful widget with the pane state such that updates to this control
         widget will affect the pane when configured properly. Ensure proper
@@ -78,7 +78,7 @@ class StatefulPane(LayoutWidget):
 
         widget.attach(self.pane_state)
 
-    def attach_widget(self, widget: StatefulWidget):
+    def attach_widget(self, widget: AbstractControlWidget):
         """
         Enchain the pane state with the specified widget and position it
         beneath the main feature pane. Use this method when a control widget
@@ -91,7 +91,7 @@ class StatefulPane(LayoutWidget):
         self.nextRow()
 
 
-class ImagePane(StatefulPane):
+class ImagePane(AbstractStatefulPane):
     """
     A pane which can be used to display and analyze image data with a fast
     refresh rate. An callback function for updating the display must be
@@ -113,7 +113,7 @@ class ImagePane(StatefulPane):
         self.displaypane.setImage(args[0], autoRange=True, autoLevels=True, autoHistogramRange=True)
 
 
-class BasePlot2DPane(StatefulPane):
+class BasePlot2DPane(AbstractStatefulPane):
     """
     The Base/Abstract class in which all 2D plotting panes are derived. The
     purpose of this class is merely to provide a basic set up for inheritors
@@ -204,7 +204,7 @@ class Plot2DScatterPane(BasePlot2DPane):
         self.plot_args["symbolBrush"] = (0, 255, 0, 90)
 
 
-class Plot3DPane(StatefulPane):
+class Plot3DPane(AbstractStatefulPane):
     """
     An OpenGL-enabled 3D plotting pane. The current documentation for PyQtGraph
     reveals features related to this plotting technique remain in early

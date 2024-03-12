@@ -6,7 +6,7 @@ from qtviewer.state import State
 from pyqtgraph import LayoutWidget
 
 
-class StatefulWidget(LayoutWidget):
+class AbstractControlWidget(LayoutWidget):
     """
     Instantiate a new stateful widget in a detached state (relative to the
     parent pane). Due to common functional interface requirements of the Qt
@@ -16,8 +16,6 @@ class StatefulWidget(LayoutWidget):
     the top level user specified callbacks. For an example, the returned
     integer value could be used to index into a string array if a particular
     string value is needed.
-
-    IMPORTANT: This is a base class for deriving widgets used in this library.
 
     NOTE FROM THE AUTHOR: I have no intention of supporting form components
     such as text input fields at this time. The purpose of this library is to
@@ -75,7 +73,7 @@ class StatefulWidget(LayoutWidget):
             x.flush()
 
 
-class ParameterToggle(StatefulWidget):
+class ParameterToggle(AbstractControlWidget):
     cb: QCheckBox
 
     def __init__(self, label: str, init: bool, key: Optional[str] = None) -> None:
@@ -109,7 +107,7 @@ class ParameterToggle(StatefulWidget):
         self.state_update(value)
 
 
-class ParameterTrackbar(StatefulWidget):
+class ParameterTrackbar(AbstractControlWidget):
     label: str
     s: TrackbarH
     t: QLabel
